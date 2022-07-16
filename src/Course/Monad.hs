@@ -36,8 +36,10 @@ instance Monad ExactlyOne where
     (a -> ExactlyOne b)
     -> ExactlyOne a
     -> ExactlyOne b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance ExactlyOne"
+  -- (=<<) =
+  --   error "todo: Course.Monad (=<<)#instance ExactlyOne"
+  -- faeb =<< ExactlyOne a = faeb a
+  (=<<) = bindExactlyOne
 
 -- | Binds a function on a List.
 --
@@ -48,8 +50,9 @@ instance Monad List where
     (a -> List b)
     -> List a
     -> List b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance List"
+  -- (=<<) =
+  --   error "todo: Course.Monad (=<<)#instance List"
+  (=<<) = flatMap
 
 -- | Binds a function on an Optional.
 --
@@ -60,8 +63,11 @@ instance Monad Optional where
     (a -> Optional b)
     -> Optional a
     -> Optional b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance Optional"
+  -- (=<<) =
+  --   error "todo: Course.Monad (=<<)#instance Optional"
+  -- _ =<< Empty = Empty
+  -- faob =<< (Full a) = faob a
+  (=<<) = bindOptional
 
 -- | Binds a function on the reader ((->) t).
 --
@@ -72,8 +78,16 @@ instance Monad ((->) t) where
     (a -> ((->) t b))
     -> ((->) t a)
     -> ((->) t b)
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance ((->) t)"
+  -- (=<<) =
+  --   error "todo: Course.Monad (=<<)#instance ((->) t)"
+  -- fatb =<< fta = \t ->
+  --   let
+  --     a = fta t
+  --     ftb = fatb a
+  --   in ftb t
+  fatb =<< fta = \t ->
+    let a = fta t
+    in fatb a t
 
 -- | Witness that all things with (=<<) and (<$>) also have (<*>).
 --
@@ -111,8 +125,14 @@ instance Monad ((->) t) where
   k (a -> b)
   -> k a
   -> k b
-(<**>) =
-  error "todo: Course.Monad#(<**>)"
+-- (<**>) =
+--   error "todo: Course.Monad#(<**>)"
+-- (=<<) :: ((a -> b) -> k b) -> k (a -> b) -> k b
+-- \fab -> fab <$> ka :: (a -> b) -> k b
+-- kfab <**> ka =
+--   let ffabkb = \fab -> fab <$> ka
+--   in ffabkb =<< kfab
+kfab <**> ka = (<$> ka) =<< kfab
 
 infixl 4 <**>
 
@@ -133,8 +153,10 @@ join ::
   Monad k =>
   k (k a)
   -> k a
-join =
-  error "todo: Course.Monad#join"
+-- join =
+--   error "todo: Course.Monad#join"
+-- join kka = id =<< kka
+join = (id =<<)
 
 -- | Implement a flipped version of @(=<<)@, however, use only
 -- @join@ and @(<$>)@.
@@ -147,8 +169,10 @@ join =
   k a
   -> (a -> k b)
   -> k b
-(>>=) =
-  error "todo: Course.Monad#(>>=)"
+-- (>>=) =
+--   error "todo: Course.Monad#(>>=)"
+-- <$> :: (a -> k b) -> k a -> k (k b)
+ka >>= fakb = join (fakb <$> ka)
 
 infixl 1 >>=
 
@@ -163,8 +187,12 @@ infixl 1 >>=
   -> (a -> k b)
   -> a
   -> k c
-(<=<) =
-  error "todo: Course.Monad#(<=<)"
+-- (<=<) =
+--   error "todo: Course.Monad#(<=<)"
+-- fbkc <=< fakb = \a ->
+--   let kb = fakb a
+--   in fbkc =<< kb
+fbkc <=< fakb = (fbkc =<<) . fakb
 
 infixr 1 <=<
 
