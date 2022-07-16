@@ -41,8 +41,10 @@ instance Functor ExactlyOne where
     (a -> b)
     -> ExactlyOne a
     -> ExactlyOne b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance ExactlyOne"
+  -- (<$>) =
+  --   error "todo: Course.Functor (<$>)#instance ExactlyOne"
+  -- fab <$> ExactlyOne a = ExactlyOne (fab a)
+  (<$>) = mapExactlyOne
 
 -- | Maps a function on the List functor.
 --
@@ -56,8 +58,9 @@ instance Functor List where
     (a -> b)
     -> List a
     -> List b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance List"
+  -- (<$>) =
+  --   error "todo: Course.Functor (<$>)#instance List"
+  (<$>) = map
 
 -- | Maps a function on the Optional functor.
 --
@@ -71,8 +74,11 @@ instance Functor Optional where
     (a -> b)
     -> Optional a
     -> Optional b
-  (<$>) =
-    error "todo: Course.Functor (<$>)#instance Optional"
+  -- (<$>) =
+  --   error "todo: Course.Functor (<$>)#instance Optional"
+  -- fab <$> Empty = Empty
+  -- fab <$> (Full a) = Full (fab a)
+  (<$>) = mapOptional
 
 -- | Maps a function on the reader ((->) t) functor.
 --
@@ -83,8 +89,10 @@ instance Functor ((->) t) where
     (a -> b)
     -> ((->) t a)
     -> ((->) t b)
-  (<$>) =
-    error "todo: Course.Functor (<$>)#((->) t)"
+  -- (<$>) =
+  --   error "todo: Course.Functor (<$>)#((->) t)"
+  -- fab <$> fta = \t -> fab (fta t)
+  fab <$> fta = fab . fta
 
 -- | Anonymous map. Maps a constant value on a functor.
 --
@@ -99,8 +107,10 @@ instance Functor ((->) t) where
   a
   -> k b
   -> k a
-(<$) =
-  error "todo: Course.Functor#(<$)"
+-- (<$) =
+--   error "todo: Course.Functor#(<$)"
+-- a <$ kb = (\b -> a) <$> kb
+a <$ kb = const a <$> kb
 
 -- | Apply a value to a functor-of-functions.
 --
@@ -124,8 +134,9 @@ instance Functor ((->) t) where
   k (a -> b)
   -> a
   -> k b
-(??) ff a =
-  error "todo: Course.Functor#(??)"
+-- (??) ff a =
+--   error "todo: Course.Functor#(??)"
+kfab ?? a = (\fab -> fab a) <$> kfab
 
 infixl 1 ??
 
@@ -146,8 +157,11 @@ void ::
   Functor k =>
   k a
   -> k ()
-void =
-  error "todo: Course.Functor#void"
+-- void =
+--   error "todo: Course.Functor#void"
+-- void ka = (\a -> ()) <$> ka
+-- void ka = const () <$> ka
+void = (() <$)
 
 -----------------------
 -- SUPPORT LIBRARIES --
