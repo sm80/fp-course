@@ -29,8 +29,9 @@ instance Comonad ExactlyOne where
   copure ::
     ExactlyOne a
     -> a
-  copure =
-    error "todo: Course.Comonad copure#instance ExactlyOne"
+  -- copure =
+  --   error "todo: Course.Comonad copure#instance ExactlyOne"
+  copure = runExactlyOne
 
 -- | Witness that all things with (<<=) and copure also have (<$>).
 --
@@ -41,5 +42,10 @@ instance Comonad ExactlyOne where
   (a -> b)
   -> k a
   -> k b
-(<$$>) =
-  error "todo: Course.Comonad#(<$>)"
+-- (<$$>) =
+--   error "todo: Course.Comonad#(<$>)"
+-- (<<=) :: (k a -> b) -> k a -> k b
+-- fab <$$> ka =
+--   let fkab = \ka -> fab (copure ka)
+--   in fkab <<= ka
+(<$$>) fab = ((fab . copure) <<=)
