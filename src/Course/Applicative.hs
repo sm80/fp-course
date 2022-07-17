@@ -433,8 +433,8 @@ filtering ::
 --     g a la b = if b then a :. la else la
 filtering fakb = foldRight f (pure Nil)
   where
-    f a kla = lift2 (g a) kla (fakb a)
-    g a la b = if b then a :. la else la
+    f a kla = lift2 (g a) (fakb a) kla
+    g a b la = if b then a :. la else la
 
 -----------------------
 -- SUPPORT LIBRARIES --
