@@ -263,7 +263,7 @@ betweenCharTok ::
   -> Parser a
 -- betweenCharTok =
 --   error "todo: Course.MoreParser#betweenCharTok"
-betweenCharTok c c' = between (is c) (is c')
+betweenCharTok c c' = between (charTok c) (charTok c')
 
 -- | Write a function that parses 4 hex digits and return the character value.
 --
